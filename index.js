@@ -43,7 +43,7 @@ async function run() {
    const id = req.params.id;
    const query = {_id:new ObjectId(id)}
    const options = {
-    projection: { title: 1, price: 1 ,service_id:1 },
+    projection: { title: 1, price: 1 ,service_id:1 , img: 1},
   };
    const result = await serviceCollection.findOne(query,options)
    res.send(result)
@@ -52,6 +52,17 @@ async function run() {
 
  //booking
 
+
+ app.get('/bookings',async(req,res)=>{
+  console.log(req.query.email);
+  let query = {};
+if(req.query?.email){
+  query ={email: req.query.email}
+}
+  const result = await bookingCoolection.find(query).toArray();
+  res.send(result);
+ })
+
  app.post('/bookings',async(req,res)=>{
   const booking = req.body;
   console.log(booking);
@@ -59,6 +70,30 @@ async function run() {
   res.send(result);
 
  });
+
+app.patch('/bookings/:id',async(req,res)=>{
+  const id = req.params.id;
+  const filter ={_id:new ObjectId(id) }
+  const updated = req.body;
+  console.log(updated);
+const updateDoc = {
+
+  $set:{
+    status : updated.status
+  },
+};
+const result = await bookingCoolection.updateOne(filter,updateDoc);
+res.send(result);
+
+})
+
+
+ app.delete('/bookings/:id',async(req,res)=>{
+  const id = req.params.id;
+  const query = {_id: new ObjectId(id)}
+  const result = await bookingCoolection.deleteOne(query);
+  res.send(result)
+ })
 
 
     // Send a ping to confirm a successful connection
